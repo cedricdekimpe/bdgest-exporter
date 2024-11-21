@@ -15,14 +15,23 @@ Now the problem was that BDGest doesn't include a way to share your collection e
 ![How it started](./how-it-started.png "How it started")
 
 > Which Nelson album is Noah missing?
+
 > Having a look
+
 > Ok
+> 
 > Oh and Kid Paddle as well please
+
 > Yeah OK but my connection is slow
+>
 > Fuck it's not loading
+> 
 > Oh here we are
+> 
 > I'm gonna list the one he already has
+> 
 > Nelson : 1, 2, 3, 4, 5, 6, 7, 11, 12, 16, 18, 19, 25, 26
+> 
 > Kid Paddle 1, 2, 3, 4, 11, 13, 19 + Best Of : Jurassic Paddle
 
 ## How
