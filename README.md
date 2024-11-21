@@ -4,7 +4,7 @@ This is a simple pet project that fetches CSV out of [BDGest](https://online.bdg
 
 ## Why
 
-I've been collecting _bande dessinnées_ (Belgian/European/Western comic books, depending on how you call them) since I was a kid. For years I found it hard to keep track of what I had versus what I wanted, but I never really care enough to make something to fix it.
+I've been collecting [_bande dessinées_](https://en.wikipedia.org/wiki/Belgian_comics) (Belgian/European/Western comic books, depending on how you call them) since I was a kid. For years I found it hard to keep track of what I had versus what I wanted, but I never really care enough to make something to fix it.
 
 It all changed when my kids started their own collection. What was at worse a medium inconvenience slowly became more and more frustrating. There's nothing sadder than seeing a kid so happy to receive a new comic book, only to realise it is one he already has.
 
