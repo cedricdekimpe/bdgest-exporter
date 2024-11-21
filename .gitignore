@@ -1,0 +1,6 @@
+.sftpass
+deploy.sh
+run.sh
+data/*.csv
+data/*.csv.back
+public/*.html
