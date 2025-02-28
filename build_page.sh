@@ -7,7 +7,7 @@ tmp_file="./tmp/${firstname}.csv"
 file="./data/${firstname}.csv"
 if test -f "${tmp_file}"; then
   mv $file $file.back
-  mv $tmp_file $file
+  awk -F';' '$19==0' $tmp_file > $file # La colonne 19 correspond a l'attribut wishlist
   if test -f "${file}"; then
     echo "$file exists."
 
