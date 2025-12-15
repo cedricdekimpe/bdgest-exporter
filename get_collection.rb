@@ -62,7 +62,7 @@ cookie_string = initial_cookies.map { |k, v| "#{k}=#{v}" }.join('; ')
 
 login_headers = HEADERS.merge('Cookie' => cookie_string)
 response = HTTParty.post(LOGIN_URL, headers: login_headers, body: payload)
-
+
 cookies = response.request.options[:headers]['Cookie']
 
 r3 = HTTParty.get("https://online.bdgest.com/exportation?filename=#{filename}&collection=#{collection_id}",

@@ -1,22 +1,31 @@
 #!/bin/bash
 
-date=$(date '+%Y-%m-%d %H:%M:%S')
-firstname=$1
+date="$(date '+%Y-%m-%d %H:%M:%S')"
+
+if [[ $# -lt 1 ]]; then
+  echo "[error] Usage: $0 <firstname>" >&2
+  exit 1
+fi
+
+firstname="$1"
 echo "Building page for $firstname"
+
 tmp_file="./tmp/${firstname}.csv"
 file="./data/${firstname}.csv"
-if test -f "${tmp_file}"; then
-  mv $file $file.back
-  mv $tmp_file $file
-  if test -f "${file}"; then
+
+if [[ -f "$tmp_file" ]]; then
+  [[ -f "$file" ]] && mv -f "$file" "$file.back"
+  mv -f "$tmp_file" "$file"
+
+  if [[ -f "$file" ]]; then
     echo "$file exists."
+
+    mkdir -p ./public
 
     (
       echo "<!DOCTYPE html>"
       echo "<html lang='fr'>"
       echo "<head>"
-      echo "<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css' >"
-      echo "<title>Collection de BD de ${firstname^}</title>"
       echo "<meta charset='utf-8'>"
       echo "<meta name='viewport' content='width=device-width, initial-scale=1'>"
       echo "<meta name='color-scheme' content='light dark'>"
@@ -36,20 +45,18 @@ if test -f "${tmp_file}"; then
       echo "  th { user-select: none; }"
       echo "  .series-count { font-weight: bold; color: var(--pico-primary); }"
       echo "</style>"
+      echo "<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css'>"
+      echo "<title>Collection de BD de ${firstname^}</title>"
       echo "</head>"
       echo "<body>"
       echo "<script>"
       echo "function filterByName(event) {"
       echo "  const searchTerm = event.target.value.trim().toLowerCase();"
-      echo "  const listItems = document.querySelectorAll('table tr');"
-      echo ""
-      echo "  listItems.forEach(function(item) {"
-      echo "    item.style.display = 'revert';"
-      echo ""
-      echo "    if (!item.innerText.toLowerCase().includes(searchTerm)) {"
-      echo "      item.style.display = 'none';"
-      echo "    }"
-      echo "  })"
+      echo "  const rows = document.querySelectorAll('table tr');"
+      echo "  rows.forEach(function(row, idx) {"
+      echo "    if (idx === 0) return; // keep header if you add one later"
+      echo "    row.style.display = row.innerText.toLowerCase().includes(searchTerm) ? 'revert' : 'none';"
+      echo "  });"
       echo "}"
       echo ""
       echo "function sortTable(columnIndex) {"
@@ -83,14 +90,14 @@ if test -f "${tmp_file}"; then
       echo "<main class='container'>"
       echo "<h1>Collection de BD de ${firstname^}</h1>"
       echo "<nav>"
-      echo "<ul>"
+      echo "  <ul>"
       for fname in aidan noah cedric; do
-        echo "<li><a href='./$fname.html'>${fname^}</a></li>"
+        echo "    <li><a href='./$fname.html'>${fname^}</a></li>"
       done
-      echo "</ul>"
-      echo "<ul>"
-      echo "<li><a href='./index.html'>Accueil</a></li>"
-      echo "</ul>"
+      echo "  </ul>"
+      echo "  <ul>"
+      echo "    <li><a href='./index.html'>Accueil</a></li>"
+      echo "  </ul>"
       echo "</nav>"
       
       # Count total books and series
@@ -132,14 +139,15 @@ if test -f "${tmp_file}"; then
       echo "</main>"
       echo "</body>"
       echo "</html>"
-    ) >./public/$firstname.html
+    ) > "./public/$firstname.html"
 
   else
-    echo "[error] $file does not exists."
+    echo "[error] $file does not exist." >&2
     exit 1
   fi
 
 else
-  echo "[error] $tmp_file does not exists."
+  echo "[error] $tmp_file does not exist." >&2
   exit 1
 fi
+
