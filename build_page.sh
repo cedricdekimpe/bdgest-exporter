@@ -20,6 +20,22 @@ if test -f "${tmp_file}"; then
       echo "<meta charset='utf-8'>"
       echo "<meta name='viewport' content='width=device-width, initial-scale=1'>"
       echo "<meta name='color-scheme' content='light dark'>"
+      echo "<style>"
+      echo "  @media (max-width: 768px) {"
+      echo "    table { font-size: 0.875rem; }"
+      echo "    th, td { padding: 0.5rem 0.25rem; }"
+      echo "    .isbn-col { display: none; }"
+      echo "  }"
+      echo "  .stats { "
+      echo "    background: var(--pico-card-background-color);"
+      echo "    padding: 1rem;"
+      echo "    border-radius: var(--pico-border-radius);"
+      echo "    margin-bottom: 1rem;"
+      echo "  }"
+      echo "  .stats p { margin: 0.5rem 0; }"
+      echo "  th { user-select: none; }"
+      echo "  .series-count { font-weight: bold; color: var(--pico-primary); }"
+      echo "</style>"
       echo "</head>"
       echo "<body>"
       echo "<script>"
@@ -76,26 +92,39 @@ if test -f "${tmp_file}"; then
       echo "<li><a href='./index.html'>Accueil</a></li>"
       echo "</ul>"
       echo "</nav>"
-      echo "<p>Dernière mise à jour : $date</p>"
-      echo "<input type='search' placeholder='Type here to filter the list' oninput='filterByName(event)' >"
-      echo "<table id='bdTable'>"
+      
+      # Count total books and series
+      total_books=$(wc -l < "$file")
+      total_series=$(cut -d';' -f3 "$file" | sed -e 's/^"//' -e 's/"$//' | sort -u | wc -l)
+      
+      echo "<div class='stats'>"
+      echo "<p><strong>📚 Total:</strong> <span class='series-count'>$total_books albums</span> répartis en <span class='series-count'>$total_series séries</span></p>"
+      echo "<p><small>💡 Utilisez la recherche ci-dessous pour filtrer par série ou titre</small></p>"
+      echo "<p><small>⬆️⬇️ Cliquez sur les en-têtes de colonnes pour trier</small></p>"
+      echo "</div>"
+      
+      echo "<p><small>Dernière mise à jour : $date</small></p>"
+      echo "<input type='search' placeholder='🔍 Rechercher une série ou un titre...' oninput='filterByName(event)' aria-label='Rechercher dans la collection'>"
+      echo "<table id='bdTable' role='table'>"
       echo "<thead>"
       echo "<tr>"
-      echo "<th onclick='sortTable(0)' style='cursor: pointer;'>Serie ▲▼</th>"
-      echo "<th onclick='sortTable(1)' style='cursor: pointer;'>Num ▲▼</th>"
-      echo "<th onclick='sortTable(2)' style='cursor: pointer;'>Titre ▲▼</th>"
-      echo "<th onclick='sortTable(3)' style='cursor: pointer;'>ISBN ▲▼</th>"
+      echo "<th onclick='sortTable(0)' style='cursor: pointer;' scope='col'>Série ▲▼</th>"
+      echo "<th onclick='sortTable(1)' style='cursor: pointer;' scope='col'>N° ▲▼</th>"
+      echo "<th onclick='sortTable(2)' style='cursor: pointer;' scope='col'>Titre ▲▼</th>"
+      echo "<th onclick='sortTable(3)' style='cursor: pointer;' class='isbn-col' scope='col'>ISBN ▲▼</th>"
       echo "</tr>"
       echo "</thead>"
       echo "<tbody>"
       sort -t';' -k3,3 -f "$file" | while IFS=";" read -r idAlbum isbn serie num numa title rest; do
         serie=$(echo "$serie" | sed -e 's/^"//' -e 's/"$//')
         title=$(echo "$title" | sed -e 's/^"//' -e 's/"$//')
+        # Clean up the num field
+        num=$(echo "$num" | sed -e 's/^"//' -e 's/"$//')
         echo "<tr>"
-        echo "<td>$serie</td>"
+        echo "<td><strong>$serie</strong></td>"
         echo "<td>$num</td>"
         echo "<td>$title</td>"
-        echo "<td>$isbn</td>"
+        echo "<td class='isbn-col'>$isbn</td>"
         echo "</tr>"
       done
       echo "</tbody>"
