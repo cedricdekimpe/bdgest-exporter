@@ -1,4 +1,4 @@
-#! /bin/sh
+#!/bin/bash
 
 date=$(date '+%Y-%m-%d %H:%M:%S')
 firstname=$1
@@ -35,6 +35,33 @@ if test -f "${tmp_file}"; then
       echo "    }"
       echo "  })"
       echo "}"
+      echo ""
+      echo "function sortTable(columnIndex) {"
+      echo "  const table = document.getElementById('bdTable');"
+      echo "  const tbody = table.querySelector('tbody');"
+      echo "  const rows = Array.from(tbody.querySelectorAll('tr'));"
+      echo "  const isNumeric = columnIndex === 1;"
+      echo ""
+      echo "  rows.sort((a, b) => {"
+      echo "    const aText = a.cells[columnIndex].textContent.trim();"
+      echo "    const bText = b.cells[columnIndex].textContent.trim();"
+      echo ""
+      echo "    if (isNumeric) {"
+      echo "      return parseFloat(aText) - parseFloat(bText);"
+      echo "    }"
+      echo "    return aText.localeCompare(bText, 'fr', { sensitivity: 'base' });"
+      echo "  });"
+      echo ""
+      echo "  if (table.dataset.sortColumn == columnIndex && table.dataset.sortDirection == 'asc') {"
+      echo "    rows.reverse();"
+      echo "    table.dataset.sortDirection = 'desc';"
+      echo "  } else {"
+      echo "    table.dataset.sortDirection = 'asc';"
+      echo "  }"
+      echo "  table.dataset.sortColumn = columnIndex;"
+      echo ""
+      echo "  rows.forEach(row => tbody.appendChild(row));"
+      echo "}"
       echo "</script>"
       echo ""
       echo "<main class='container'>"
@@ -51,17 +78,27 @@ if test -f "${tmp_file}"; then
       echo "</nav>"
       echo "<p>Dernière mise à jour : $date</p>"
       echo "<input type='search' placeholder='Type here to filter the list' oninput='filterByName(event)' >"
-      echo "<table>"
-      while IFS=";" read -r idAlbum isbn serie num numa title rest; do
-        serie=$(sed -e 's/^"//' -e 's/"$//' <<<"$serie")
-        title=$(sed -e 's/^"//' -e 's/"$//' <<<"$title")
+      echo "<table id='bdTable'>"
+      echo "<thead>"
+      echo "<tr>"
+      echo "<th onclick='sortTable(0)' style='cursor: pointer;'>Serie ▲▼</th>"
+      echo "<th onclick='sortTable(1)' style='cursor: pointer;'>Num ▲▼</th>"
+      echo "<th onclick='sortTable(2)' style='cursor: pointer;'>Titre ▲▼</th>"
+      echo "<th onclick='sortTable(3)' style='cursor: pointer;'>ISBN ▲▼</th>"
+      echo "</tr>"
+      echo "</thead>"
+      echo "<tbody>"
+      sort -t';' -k3,3 -f "$file" | while IFS=";" read -r idAlbum isbn serie num numa title rest; do
+        serie=$(echo "$serie" | sed -e 's/^"//' -e 's/"$//')
+        title=$(echo "$title" | sed -e 's/^"//' -e 's/"$//')
         echo "<tr>"
         echo "<td>$serie</td>"
         echo "<td>$num</td>"
         echo "<td>$title</td>"
         echo "<td>$isbn</td>"
         echo "</tr>"
-      done <$file
+      done
+      echo "</tbody>"
       echo "</table>"
       echo "</main>"
       echo "</body>"
