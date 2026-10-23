@@ -148,6 +148,11 @@ function buildTable(items, container) {
     isbn.textContent = item.dataset.isbn || '';
     return row;
   });
+  // A tap anywhere on the row opens the album, not only on the (small) title
+  body.addEventListener('click', event => {
+    const row = event.target.closest('tr');
+    if (row && !event.target.closest('a')) row.querySelector('a').click();
+  });
   container.appendChild(table);
   return rows;
 }

@@ -22,12 +22,15 @@ header h1 { margin-bottom: 0.5rem; }
 .search-count { display: block; min-height: 1.5em; margin-top: 0.4rem; color: var(--pico-muted-color); }
 .view-switch { margin-bottom: 1rem; }
 .view-switch button { padding: 0.35rem 0.8rem; }
+.view-switch button[aria-pressed="true"] { background: var(--pico-primary-background); color: var(--pico-primary-inverse); }
 
 details.serie { margin-bottom: 0.25rem; border-bottom: 1px solid var(--pico-muted-border-color); padding-bottom: 0.25rem; }
 details.serie summary small { color: var(--pico-muted-color); }
 details.serie summary em { color: var(--pico-del-color); font-style: normal; }
 details.serie ul { margin-bottom: 0.5rem; }
-details.serie li { list-style: none; }
+details.serie li { list-style: none; display: flex; align-items: baseline; gap: 0.25rem; }
+details.serie li a { flex: 1; padding: 0.65rem 0; }
+details.serie li + li { border-top: 1px solid var(--pico-muted-border-color); }
 .num { display: inline-block; min-width: 2.2em; color: var(--pico-muted-color); font-variant-numeric: tabular-nums; }
 mark.dup { padding: 0 0.3em; font-size: 0.8em; }
 
@@ -38,9 +41,12 @@ mark.dup { padding: 0 0.3em; font-size: 0.8em; }
   font-weight: bold;
 }
 .table-view th button:focus-visible { outline: 2px solid var(--pico-primary); }
+/* The whole row opens the album (see app.js): it has to be easy to hit with a finger */
+.table-view tbody tr { cursor: pointer; }
+.table-view tbody tr:hover td, .table-view tbody tr:active td { background: var(--pico-table-row-stripped-background-color); }
 @media (max-width: 768px) {
-  .table-view table { font-size: 0.875rem; }
-  .table-view th, .table-view td { padding: 0.5rem 0.25rem; }
+  .table-view table { font-size: 0.9rem; }
+  .table-view th, .table-view td { padding: 0.8rem 0.35rem; }
   .isbn-col { display: none; }
 }
 

@@ -104,6 +104,13 @@ class UiTest(unittest.TestCase):
         page.fill('.album-search', 'nelson 10')
         self.assertEqual(page.eval_on_selector_all('.table-view tbody tr:not([hidden])', 'rows => rows.length'), 1)
 
+    def test_a_tap_anywhere_on_a_table_row_opens_the_album(self):
+        page = self.open('/kid.html')
+        page.click('button[data-view=table]')
+        with page.context.expect_page() as album:
+            page.click('.table-view tbody tr:first-child td:first-child')
+        self.assertIn('bedetheque.com/BD-x-', album.value.url)
+
     def test_global_search(self):
         page = self.open('/index.html')
         page.fill('#global-search', 'nelson 12')
