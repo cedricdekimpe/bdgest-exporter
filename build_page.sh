@@ -14,6 +14,18 @@ tmp_file="./tmp/${firstname}.csv"
 file="./data/${firstname}.csv"
 
 if [[ -f "$tmp_file" ]]; then
+  # Never replace a good collection with an error page or a truncated export
+  if ! head -1 "$tmp_file" | grep -q '^IdAlbum;ISBN;Serie;Num'; then
+    echo "[error] $tmp_file is not a BDGest CSV export" >&2
+    exit 1
+  fi
+  new_count=$(wc -l < "$tmp_file")
+  old_count=$([[ -f "$file" ]] && wc -l < "$file" || echo 0)
+  if [[ $new_count -lt 2 || $((new_count * 2)) -lt $old_count ]]; then
+    echo "[error] $tmp_file has $new_count lines (previous: $old_count), refusing to publish" >&2
+    exit 1
+  fi
+
   [[ -f "$file" ]] && mv -f "$file" "$file.back"
   mv -f "$tmp_file" "$file"
 
@@ -101,7 +113,7 @@ if [[ -f "$tmp_file" ]]; then
       echo "</nav>"
       
       # Count total books and series
-      total_books=$(wc -l < "$file")
+      total_books=$(( $(wc -l < "$file") - 1 ))
       total_series=$(cut -d';' -f3 "$file" | sed -e 's/^"//' -e 's/"$//' | sort -u | wc -l)
       
       echo "<div class='stats'>"

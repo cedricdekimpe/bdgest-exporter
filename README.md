@@ -59,27 +59,30 @@ Most of the code could be refactored, it's under optimized, but for the 3rd time
 
 ## Dependencies
 
-- Ruby
-  - Nokogiri
-  - HTTParty
+- Python 3 with [Playwright](https://playwright.dev/python/) (`uv venv .venv && uv pip install --python .venv/bin/python playwright`)
+- A Chromium (the script reuses the one in `~/.cache/ms-playwright`, or set `CHROMIUM_PATH`)
 
-## Environment variables
+`online.bdgest.com` sits behind a Cloudflare challenge that rejects plain HTTP clients (and the headless
+Chromium User-Agent), which is why the export runs in a real browser.
 
-`BDGEST_USERNAME` : Your BDGest username (email)
+## Configuration
 
-`BDGEST_PASSWORD` : Your BDGest password
+`run.sh` and `deploy.sh` load `~/.config/bd-lists.env` (mode 600):
 
-## How to fetch BDGest CSV Export
+- `BDGEST_LOGIN` / `BDGEST_PASSWORD` : your BDGest credentials
+- `BD_KUMA_PUSH_URL` : (optional) Uptime Kuma push monitor, called by `run.sh` on failure and by `deploy.sh` on success
+
+## How to fetch BDGest CSV exports
 
 ```sh
-ruby get_collection.rb cedric.csv <COLLECTION_ID>
+.venv/bin/python get_collection.py cedric.csv:<COLLECTION_ID> noah.csv:<COLLECTION_ID> ...
 ```
 
 The `COLLECTION_ID` can be found here [Outils > Sauvegarde](https://online.bdgest.com/outils/sauvegarde) by inspecting the values of the `<select>` element
 
 ![Fetch collection IDs](./fetch-collection-ids.png)
 
-The script will write `cedric.csv` into the `./tmp` directory
+It logs in once, and writes the CSV files into the `./tmp` directory only if every export is valid.
 
 ## How to generate the HTML file
 
@@ -87,4 +90,11 @@ The script will write `cedric.csv` into the `./tmp` directory
 sh build_page.sh cedric
 ```
 
-The script will look for the file `cedric.csv` into the `./tmp` directory and generate an HTML page that will be stored under `public/cedric.html`
+The script will look for the file `cedric.csv` into the `./tmp` directory and generate an HTML page that will be stored under `public/cedric.html`.
+It refuses an invalid CSV, or one that lost more than half of its lines compared to the previous export.
+
+## Monitoring
+
+`run.sh` writes `public/up` (`ok <date>`) only when everything was rebuilt, `deploy.sh` publishes it as `https://bd.dkmp.be/up`.
+Uptime Kuma watches `/up`, the Cédric page (it must not say "0 albums") and a push monitor that expects a run every day.
+Run it once a day at most: too many logins get the IP rate limited by Cloudflare (error 1015).
