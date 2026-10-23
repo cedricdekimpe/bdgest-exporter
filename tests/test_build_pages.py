@@ -55,8 +55,13 @@ class BuildPagesTest(unittest.TestCase):
 
     def test_semicolon_and_multiline_titles_stay_in_one_row(self):
         build_pages.build(self.root, NOW)
-        self.assertIn('<td>Titre avec ; point-virgule</td>', self.page())
-        self.assertIn('<td>Titre sur\ndeux lignes</td>', self.page())
+        self.assertIn('point-virgule</a></td>', self.page())
+        self.assertIn('deux lignes</a></td>', self.page())
+
+    def test_title_links_to_the_bedetheque_album_page(self):
+        build_pages.build(self.root, NOW)
+        self.assertIn("<a href='https://www.bedetheque.com/BD-x-1.html' target='_blank' rel='noopener'>Les nerfs à vif</a>", self.page())
+        self.assertNotIn('amazon', self.page().lower())
 
     def test_rows_sorted_by_series_ignoring_accents_then_number(self):
         build_pages.build(self.root, NOW)

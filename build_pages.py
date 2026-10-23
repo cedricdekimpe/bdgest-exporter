@@ -16,6 +16,8 @@ from datetime import datetime
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
+# Bedetheque (BDGest) redirects this URL to the canonical page of the album, whatever the slug
+ALBUM_URL = 'https://www.bedetheque.com/BD-x-{}.html'
 REQUIRED_COLUMNS = ('IdAlbum', 'ISBN', 'Serie', 'Num', 'Titre', 'Wishlist')
 # A new export with less than this share of the previous rows is considered broken
 MIN_KEPT_RATIO = 0.5
@@ -65,7 +67,8 @@ def table(rows, table_id):
             '<tr>'
             f"<td><strong>{html.escape(row['Serie'])}</strong></td>"
             f"<td>{html.escape(row['Num'])}</td>"
-            f"<td>{html.escape(row['Titre'])}</td>"
+            f"<td><a href='{ALBUM_URL.format(html.escape(row['IdAlbum'], quote=True))}' target='_blank' rel='noopener'>"
+            f"{html.escape(row['Titre'])}</a></td>"
             f"<td class='isbn-col'>{html.escape(row['ISBN'])}</td>"
             '</tr>')
     lines += ['</tbody>', '</table>']
