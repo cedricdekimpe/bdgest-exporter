@@ -1,8 +1,7 @@
 .sftpass
 data/*.csv
 data/*.csv.back
-public/*.html
-public/up
+public/*
 .venv/
 __pycache__/
 cron.log
@@ -11,3 +10,4 @@ data/*.bck
 tmp/.~lock*
 tmp/.run.lock
 tmp/.last-attempt
+!public/.keep

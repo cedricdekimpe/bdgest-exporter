@@ -1,0 +1,69 @@
+/* Site styles on top of Pico CSS (kept in a file: the CSP forbids inline styles) */
+header.container { padding-bottom: 0; }
+header h1 { margin-bottom: 0.5rem; }
+.stats {
+  background: var(--pico-card-background-color);
+  padding: 1rem;
+  border-radius: var(--pico-border-radius);
+  margin-bottom: 1rem;
+}
+.stats p { margin: 0.25rem 0; }
+.series-count { font-weight: bold; color: var(--pico-primary); }
+
+/* Search stays reachable while scrolling a long collection */
+.search-bar {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--pico-background-color);
+  padding-top: 0.5rem;
+}
+.search-bar input { margin-bottom: 0.25rem; }
+.search-count { display: block; min-height: 1.5em; margin-top: 0.4rem; color: var(--pico-muted-color); }
+.view-switch { margin-bottom: 1rem; }
+.view-switch button { padding: 0.35rem 0.8rem; }
+
+details.serie { margin-bottom: 0.25rem; border-bottom: 1px solid var(--pico-muted-border-color); padding-bottom: 0.25rem; }
+details.serie summary small { color: var(--pico-muted-color); }
+details.serie summary em { color: var(--pico-del-color); font-style: normal; }
+details.serie ul { margin-bottom: 0.5rem; }
+details.serie li { list-style: none; }
+.num { display: inline-block; min-width: 2.2em; color: var(--pico-muted-color); font-variant-numeric: tabular-nums; }
+mark.dup { padding: 0 0.3em; font-size: 0.8em; }
+
+.table-view table { font-variant-numeric: tabular-nums; }
+.table-view th button {
+  all: unset;
+  cursor: pointer;
+  font-weight: bold;
+}
+.table-view th button:focus-visible { outline: 2px solid var(--pico-primary); }
+@media (max-width: 768px) {
+  .table-view table { font-size: 0.875rem; }
+  .table-view th, .table-view td { padding: 0.5rem 0.25rem; }
+  .isbn-col { display: none; }
+}
+
+.intro { border-left: 4px solid var(--pico-primary); }
+.global-search { display: flex; gap: 0.5rem; }
+.global-search input { flex: 1; }
+.global-search button { width: auto; }
+.global-results { padding-left: 0; }
+.global-results li { list-style: none; margin-bottom: 0.5rem; }
+.scanner video { width: 100%; max-height: 50vh; border-radius: var(--pico-border-radius); }
+.cards { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); }
+.collection-card h2 { margin-bottom: 0.5rem; }
+.recent { padding-left: 1rem; font-size: 0.9rem; }
+footer { text-align: center; opacity: 0.7; margin-top: 2rem; }
+
+.to-top {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: 50%;
+  background: var(--pico-primary-background);
+  color: var(--pico-primary-inverse);
+  text-decoration: none;
+}
+body { overflow-x: hidden; }

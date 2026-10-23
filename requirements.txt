@@ -1,0 +1,2 @@
+# Install: uv venv .venv && uv pip install --python .venv/bin/python -r requirements.txt && .venv/bin/playwright install chromium
+playwright==1.64.1
