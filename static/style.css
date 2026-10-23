@@ -25,6 +25,8 @@ header h1 { margin-bottom: 0.5rem; }
 .view-switch button[aria-pressed="true"] { background: var(--pico-primary-background); color: var(--pico-primary-inverse); }
 
 details.serie { margin-bottom: 0.25rem; border-bottom: 1px solid var(--pico-muted-border-color); padding-bottom: 0.25rem; }
+/* The series line is the main thing to tap on a phone: 44 px at least */
+details.serie summary { padding: 0.75rem 0; line-height: 1.4; }
 details.serie summary small { color: var(--pico-muted-color); }
 details.serie summary em { color: var(--pico-del-color); font-style: normal; }
 details.serie ul { margin-bottom: 0.5rem; }

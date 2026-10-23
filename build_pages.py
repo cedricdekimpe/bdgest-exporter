@@ -170,9 +170,14 @@ def nav(collections, current=None):
             f"<ul>{''.join(links)}<li><a href='a-offrir.html'{gifts_current}>🎁</a></li></ul>\n</nav>")
 
 
+# Changes with every build so that browsers reload the CSS and JS (the server sends no cache headers)
+ASSET_VERSION = datetime.now().strftime('%Y%m%d%H%M%S')
+
+
 def layout(title, description, body):
     template = (HERE / 'templates' / 'layout.html').read_text(encoding='utf-8')
-    return fill(template, {'TITLE': html.escape(title), 'DESCRIPTION': attr(description), 'BODY': body})
+    return fill(template, {'TITLE': html.escape(title), 'DESCRIPTION': attr(description), 'BODY': body,
+                           'VERSION': ASSET_VERSION})
 
 
 def fill(template, values):
