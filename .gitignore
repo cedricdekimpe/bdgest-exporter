@@ -1,6 +1,4 @@
 .sftpass
-deploy.sh
-run.sh
 data/*.csv
 data/*.csv.back
 public/*.html
@@ -8,3 +6,8 @@ public/up
 .venv/
 __pycache__/
 cron.log
+out.html
+data/*.bck
+tmp/.~lock*
+tmp/.run.lock
+tmp/.last-attempt

@@ -72,29 +72,34 @@ Chromium User-Agent), which is why the export runs in a real browser.
 - `BDGEST_LOGIN` / `BDGEST_PASSWORD` : your BDGest credentials
 - `BD_KUMA_PUSH_URL` : (optional) Uptime Kuma push monitor, called by `run.sh` on failure and by `deploy.sh` on success
 
-## How to fetch BDGest CSV exports
+## Collections
 
-```sh
-.venv/bin/python get_collection.py cedric.csv:<COLLECTION_ID> noah.csv:<COLLECTION_ID> ...
-```
-
+`collections.conf` lists the collections, one per line: `key:BDGest collection id:display name`.
 The `COLLECTION_ID` can be found here [Outils > Sauvegarde](https://online.bdgest.com/outils/sauvegarde) by inspecting the values of the `<select>` element
 
 ![Fetch collection IDs](./fetch-collection-ids.png)
 
-It logs in once, and writes the CSV files into the `./tmp` directory only if every export is valid.
-
-## How to generate the HTML file
+## How it works
 
 ```sh
-sh build_page.sh cedric
+./run.sh      # export the CSV files into ./tmp, then build the pages into ./public
+./deploy.sh   # publish ./public
 ```
 
-The script will look for the file `cedric.csv` into the `./tmp` directory and generate an HTML page that will be stored under `public/cedric.html`.
-It refuses an invalid CSV, or one that lost more than half of its lines compared to the previous export.
+- `get_collection.py` logs in once and writes `tmp/<key>.csv` only if every export is valid.
+- `build_pages.py` validates the CSV files (it refuses an error page, or an export that lost more than half of its albums),
+  keeps the previous one as `data/<key>.csv.back` and generates `public/<key>.html`, `public/index.html` and `public/up`
+  from `templates/`. Albums flagged `Wishlist` are listed apart, under "À offrir", and are not counted as owned.
+- `run.sh` refuses to run twice within the hour (`FORCE=1` to override) or concurrently, and keeps `cron.log` small.
+
+## Tests
+
+```sh
+.venv/bin/python -m unittest discover -s tests -t .
+```
 
 ## Monitoring
 
-`run.sh` writes `public/up` (`ok <date>`) only when everything was rebuilt, `deploy.sh` publishes it as `https://bd.dkmp.be/up`.
-Uptime Kuma watches `/up`, the Cédric page (it must not say "0 albums") and a push monitor that expects a run every day.
+`build_pages.py` writes `public/up` (`ok <date> cedric=561 noah=117 aidan=27`) only when everything was rebuilt, `deploy.sh` publishes it as `https://bd.dkmp.be/up`.
+Uptime Kuma watches `/up`, each collection page (it must not say "0 albums") and a push monitor that expects a run every day.
 Run it once a day at most: too many logins get the IP rate limited by Cloudflare (error 1015).

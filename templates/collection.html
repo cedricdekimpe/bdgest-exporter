@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang='fr'>
+<head>
+<meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<meta name='color-scheme' content='light dark'>
+<style>
+  @media (max-width: 768px) {
+    table { font-size: 0.875rem; }
+    th, td { padding: 0.5rem 0.25rem; }
+    .isbn-col { display: none; }
+  }
+  .stats {
+    background: var(--pico-card-background-color);
+    padding: 1rem;
+    border-radius: var(--pico-border-radius);
+    margin-bottom: 1rem;
+  }
+  .stats p { margin: 0.5rem 0; }
+  th { user-select: none; cursor: pointer; }
+  .series-count { font-weight: bold; color: var(--pico-primary); }
+</style>
+<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css'>
+<title>Collection de BD de {{NAME}}</title>
+</head>
+<body>
+<script>
+function normalize(text) {
+  return text.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+}
+
+function filterByName(event) {
+  const searchTerm = normalize(event.target.value.trim());
+  document.querySelectorAll('tbody tr').forEach(function(row) {
+    row.style.display = normalize(row.innerText).includes(searchTerm) ? '' : 'none';
+  });
+}
+
+function sortTable(header, columnIndex) {
+  const table = header.closest('table');
+  const tbody = table.querySelector('tbody');
+  const rows = Array.from(tbody.querySelectorAll('tr'));
+  const isNumeric = columnIndex === 1;
+
+  rows.sort((a, b) => {
+    const aText = a.cells[columnIndex].textContent.trim();
+    const bText = b.cells[columnIndex].textContent.trim();
+
+    if (isNumeric) {
+      return parseFloat(aText) - parseFloat(bText);
+    }
+    return aText.localeCompare(bText, 'fr', { sensitivity: 'base' });
+  });
+
+  if (table.dataset.sortColumn == columnIndex && table.dataset.sortDirection == 'asc') {
+    rows.reverse();
+    table.dataset.sortDirection = 'desc';
+  } else {
+    table.dataset.sortDirection = 'asc';
+  }
+  table.dataset.sortColumn = columnIndex;
+
+  rows.forEach(row => tbody.appendChild(row));
+}
+</script>
+
+<main class='container'>
+<h1>Collection de BD de {{NAME}}</h1>
+<nav>
+  <ul>
+{{NAV}}
+  </ul>
+  <ul>
+    <li><a href='./index.html'>Accueil</a></li>
+  </ul>
+</nav>
+<div class='stats'>
+<p><strong>📚 Total:</strong> <span class='series-count'>{{ALBUMS}} albums</span> répartis en <span class='series-count'>{{SERIES}} séries</span></p>
+{{WISHLIST_LINK}}<p><small>💡 Utilisez la recherche ci-dessous pour filtrer par série ou titre</small></p>
+<p><small>⬆️⬇️ Cliquez sur les en-têtes de colonnes pour trier</small></p>
+</div>
+<p><small>Dernière mise à jour : {{UPDATED}}</small></p>
+<input type='search' placeholder='🔍 Rechercher une série ou un titre...' oninput='filterByName(event)' aria-label='Rechercher dans la collection'>
+{{OWNED_TABLE}}
+{{WISHLIST_SECTION}}
+</main>
+</body>
+</html>
