@@ -1,3 +1,4 @@
+import gzip
 import json
 import shutil
 import tempfile
@@ -129,6 +130,13 @@ class BuildPagesTest(unittest.TestCase):
         worker = (self.root / 'public' / 'sw.js').read_text(encoding='utf-8')
         self.assertIn("const CACHE = 'bd-20261023060500';", worker)
         self.assertIn('"test.html"', worker)
+
+    def test_compressed_copies_for_nginx_gzip_static(self):
+        build_pages.build(self.root, NOW)
+        public = self.root / 'public'
+        for name in ('index.html', 'test.html', 'albums.json', 'app.js', 'pico.min.css'):
+            self.assertEqual(gzip.decompress((public / f'{name}.gz').read_bytes()), (public / name).read_bytes(), name)
+        self.assertFalse((public / 'up.gz').exists())
 
     def test_up_lists_the_counts(self):
         build_pages.build(self.root, NOW)

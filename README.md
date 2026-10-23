@@ -101,7 +101,9 @@ The `COLLECTION_ID` can be found here [Outils > Sauvegarde](https://online.bdges
   - `a-offrir.html`: everyone's wishlist (albums flagged `Wishlist`, not counted as owned);
   - `index.html`: a global "who already has this album?" search (with barcode scanning where the browser can),
     the counts and the latest purchases;
-  - `albums.json` (global search), `sw.js` (offline use), `up` (monitoring).
+  - `albums.json` (global search), `sw.js` (offline use), `up` (monitoring);
+  - a `.gz` copy of each text file: YunoHost turns nginx on-the-fly compression off, so the server serves these
+    with `gzip_static on;` (in `/etc/nginx/conf.d/bd.dkmp.be.d/gzip.conf` on the VPS).
 - `run.sh` refuses to run twice within the hour (`FORCE=1` to override) or concurrently, and keeps `cron.log` small.
 
 The search matches every word: `nelson 12` finds volume 12, an ISBN works with or without dashes, and authors and

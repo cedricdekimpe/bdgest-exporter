@@ -7,6 +7,7 @@ Also writes the home page, the gift ideas page, albums.json (global search), the
 worker, copies ./static and finally writes ./public/up.
 """
 import csv
+import gzip
 import html
 import io
 import json
@@ -24,6 +25,7 @@ REQUIRED_COLUMNS = ('IdAlbum', 'ISBN', 'Serie', 'Num', 'Titre', 'Wishlist')
 # A new export with less than this share of the previous rows is considered broken
 MIN_KEPT_RATIO = 0.5
 RECENT_COUNT = 5
+COMPRESSED_SUFFIXES = ('.html', '.css', '.js', '.json', '.svg', '.txt')
 # BDGest writes "Combat ordinaire (Le)": the article moves back in front for display
 INVERTED_ARTICLE = re.compile(r"^(.*) \((L'|Le|La|Les|Un|Une|Des|The)\)$")
 
@@ -343,6 +345,11 @@ def build(root=HERE, now=None):
     worker = fill((HERE / 'static' / 'sw.js').read_text(encoding='utf-8'),
                   {'VERSION': now.strftime('%Y%m%d%H%M%S'), 'FILES': json.dumps(pages + sorted(assets))})
     (public / 'sw.js').write_text(worker, encoding='utf-8')
+
+    # nginx serves these ready-made .gz files (gzip_static): YunoHost turns on-the-fly compression off
+    for path in public.iterdir():
+        if path.suffix in COMPRESSED_SUFFIXES:
+            Path(f'{path}.gz').write_bytes(gzip.compress(path.read_bytes(), compresslevel=9, mtime=0))
 
     # Freshness marker served as /up, written last: it only exists if everything was rebuilt
     counts = {key: len(owned) for key, owned in owned_by_key.items()}
